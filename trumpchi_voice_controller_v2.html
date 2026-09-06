@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>GAC Trumpchi Voice Controller</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-active: #334155;
+      --accent-red: #ef4444;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --text: #f8fafc;
+      --subtext: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 16px; padding-bottom: 60px; }
+
+    header { text-align: center; margin-bottom: 20px; }
+    h1 { font-size: 1.4rem; margin-bottom: 4px; }
+    p.subtitle { color: var(--subtext); font-size: 0.85rem; }
+
+    .section-title {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--subtext);
+      margin: 20px 0 10px 4px;
+      font-weight: 700;
+    }
+
+    .grid { display: grid; gap: 10px; }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+    /* Buttons */
+    .btn {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 14px 10px;
+      color: var(--text);
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, transform 0.05s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active { transform: scale(0.97); background: var(--card-active); }
+    
+    /* Typography: English first and larger */
+    .btn .label { 
+      font-size: 1.05rem; 
+      font-weight: 700; 
+      color: #ffffff;
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+    .btn .chinese { 
+      font-size: 0.85rem; 
+      font-weight: 500; 
+      color: var(--subtext);
+    }
+    .btn .pinyin { 
+      font-size: 0.72rem; 
+      color: #64748b; 
+      margin-top: 1px;
+    }
+
+    /* High Priority & Color Themes */
+    .btn-wake {
+      background: linear-gradient(135deg, #b91c1c, #dc2626);
+      padding: 18px;
+      border: none;
+    }
+    .btn-wake .label { font-size: 1.25rem; font-weight: 800; color: #ffffff; }
+    .btn-wake .chinese { color: #fecaca; font-size: 0.95rem; }
+    .btn-wake .pinyin { color: #fca5a5; }
+
+    .btn-cool { border-color: rgba(59, 130, 246, 0.4); }
+    .btn-cool .label { color: #93c5fd; }
+
+    .btn-warm { border-color: rgba(239, 68, 68, 0.4); }
+    .btn-warm .label { color: #fca5a5; }
+
+    .btn-wind { border-color: rgba(16, 185, 129, 0.4); }
+    .btn-wind .label { color: #6ee7b7; }
+
+    /* Custom Temp Control Bar */
+    .temp-selector {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .temp-selector label { font-size: 1rem; font-weight: 700; }
+    .temp-inputs { display: flex; gap: 8px; }
+    .temp-inputs select {
+      background: #0f172a;
+      color: var(--text);
+      border: 1px solid #334155;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .temp-inputs button {
+      background: var(--accent-blue);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>GAC Trumpchi Voice Control</h1>
+    <p class="subtitle">Tap button to speak in Chinese</p>
+  </header>
+
+  <!-- WAKE UP -->
+  <button class="btn btn-wake" style="width: 100%;" onclick="speak('你好，小祺')">
+    <span class="label">Wake Up Assistant</span>
+    <span class="chinese">你好，小祺</span>
+    <span class="pinyin">Nǐ hǎo, xiǎo qí</span>
+  </button>
+
+  <!-- CLIMATE & TEMPERATURE -->
+  <div class="section-title">Climate & Temperature</div>
+  
+  <div class="grid grid-2">
+    <button class="btn btn-cool" onclick="speak('温度调低点')">
+      <span class="label">Lower Temp (A Bit Hot)</span>
+      <span class="chinese">温度调低点 / 有点热</span>
+      <span class="pinyin">Wēndù tiáo dī diǎn</span>
+    </button>
+    <button class="btn btn-warm" onclick="speak('温度调高点')">
+      <span class="label">Raise Temp (A Bit Cold)</span>
+      <span class="chinese">温度调高点 / 有点冷</span>
+      <span class="pinyin">Wēndù tiáo gāo diǎn</span>
+    </button>
+  </div>
+
+  <div class="temp-selector">
+    <label for="tempPick">Set Exact Temp:</label>
+    <div class="temp-inputs">
+      <select id="tempPick">
+        <option value="18">18°C</option>
+        <option value="19">19°C</option>
+        <option value="20">20°C</option>
+        <option value="21">21°C</option>
+        <option value="22">22°C</option>
+        <option value="23">23°C</option>
+        <option value="24" selected>24°C</option>
+        <option value="25">25°C</option>
+        <option value="26">26°C</option>
+        <option value="27">27°C</option>
+        <option value="28">28°C</option>
+      </select>
+      <button onclick="setSpecificTemp()">Set °C</button>
+    </div>
+  </div>
+
+  <div class="grid grid-2" style="margin-top: 10px;">
+    <button class="btn" onclick="speak('打开空调')">
+      <span class="label">Turn ON A/C</span>
+      <span class="chinese">打开空调</span>
+      <span class="pinyin">Dǎkāi kōngtiáo</span>
+    </button>
+    <button class="btn" onclick="speak('关闭空调')">
+      <span class="label">Turn OFF A/C</span>
+      <span class="chinese">关闭空调</span>
+      <span class="pinyin">Guānbì kōngtiáo</span>
+    </button>
+    <button class="btn btn-wind" onclick="speak('风速大一点')">
+      <span class="label">Fan Speed Up</span>
+      <span class="chinese">风速大一点</span>
+      <span class="pinyin">Fēngsù dà yìdiǎn</span>
+    </button>
+    <button class="btn btn-wind" onclick="speak('风速小一点')">
+      <span class="label">Fan Speed Down</span>
+      <span class="chinese">风速小一点</span>
+      <span class="pinyin">Fēngsù xiǎo yìdiǎn</span>
+    </button>
+  </div>
+
+  <!-- WINDOWS & ROOF -->
+  <div class="section-title">Windows & Sunroof</div>
+  <div class="grid grid-2">
+    <button class="btn" onclick="speak('打开车窗')">
+      <span class="label">Open Windows</span>
+      <span class="chinese">打开车窗</span>
+      <span class="pinyin">Dǎkāi chēchuāng</span>
+    </button>
+    <button class="btn" onclick="speak('关闭车窗')">
+      <span class="label">Close Windows</span>
+      <span class="chinese">关闭车窗</span>
+      <span class="pinyin">Guānbì chēchuāng</span>
+    </button>
+    <button class="btn" onclick="speak('打开天窗')">
+      <span class="label">Open Sunroof</span>
+      <span class="chinese">打开天窗</span>
+      <span class="pinyin">Dǎkāi tiānchuāng</span>
+    </button>
+    <button class="btn" onclick="speak('关闭天窗')">
+      <span class="label">Close Sunroof</span>
+      <span class="chinese">关闭天窗</span>
+      <span class="pinyin">Guānbì tiānchuāng</span>
+    </button>
+  </div>
+
+  <!-- MEDIA & SYSTEM -->
+  <div class="section-title">Media & Audio</div>
+  <div class="grid grid-3">
+    <button class="btn" onclick="speak('增大音量')">
+      <span class="label">Vol +</span>
+      <span class="chinese">增大音量</span>
+      <span class="pinyin">Zēngdà yīnliàng</span>
+    </button>
+    <button class="btn" onclick="speak('减小音量')">
+      <span class="label">Vol -</span>
+      <span class="chinese">减小音量</span>
+      <span class="pinyin">Jiǎnxiǎo yīnliàng</span>
+    </button>
+    <button class="btn" onclick="speak('下一首')">
+      <span class="label">Next Song</span>
+      <span class="chinese">下一首</span>
+      <span class="pinyin">Xià yì shǒu</span>
+    </button>
+  </div>
+
+  <script>
+    const chineseDigits = {
+      '18': '十八',
+      '19': '十九',
+      '20': '二十',
+      '21': '二十一',
+      '22': '二十二',
+      '23': '二十三',
+      '24': '二十四',
+      '25': '二十五',
+      '26': '二十六',
+      '27': '二十七',
+      '28': '二十八'
+    };
+
+    function speak(text) {
+      if (!('speechSynthesis' in window)) {
+        alert('Text-to-speech not supported on this browser.');
+        return;
+      }
+      
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'zh-CN';
+      utterance.rate = 0.88;
+
+      const voices = window.speechSynthesis.getVoices();
+      const zhVoice = voices.find(v => v.lang.replace('_', '-').includes('zh-CN') || v.lang.includes('cmn'));
+      if (zhVoice) {
+        utterance.voice = zhVoice;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function setSpecificTemp() {
+      const val = document.getElementById('tempPick').value;
+      const numChinese = chineseDigits[val] || val;
+      speak(`温度调到${numChinese}度`);
+    }
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+  </script>
+</body>
+</html>
